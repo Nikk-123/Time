@@ -1,9 +1,12 @@
 name: Auto Commit Time Log
 
+permissions:
+  contents: write
+
 on:
-  workflow_dispatch: # Allows manual triggering
   schedule:
-    - cron: '*/1 * * * *' # Runs every minute (GitHub Actions doesn’t support <1 min)
+    - cron: '*/1 * * * *' # Runs every 1 minute
+  workflow_dispatch: # Allows manual execution
 
 jobs:
   update-time-log:
@@ -26,6 +29,4 @@ jobs:
         run: |
           git add time_log.txt
           git commit -m "Updated time log: $(date)"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/YOUR_USERNAME/YOUR_REPOSITORY.git main
