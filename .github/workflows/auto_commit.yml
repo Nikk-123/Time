@@ -29,4 +29,4 @@ jobs:
         run: |
           git add time_log.txt
           git commit -m "Updated time log: $(date)"
-          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/YOUR_USERNAME/YOUR_REPOSITORY.git main
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/Nikk-123/Time.git main
