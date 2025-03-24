@@ -5,7 +5,7 @@ permissions:
 
 on:
   schedule:
-    - cron: '*/1 * * * *' # Runs every 1 minute
+    - cron: '*/30 * * * *' # Runs every 30 minutes (2 commits per hour)
   workflow_dispatch: # Allows manual execution
 
 jobs:
@@ -23,10 +23,17 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Update Time Log
-        run: echo "$(date)" > time_log.txt
+        run: echo "$(date)" >> time_log.txt  # Appends instead of overwriting
 
       - name: Commit and Push Changes
         run: |
           git add time_log.txt
           git commit -m "Updated time log: $(date)"
           git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/Nikk-123/Time.git main
+
+      - name: Trigger Next Run
+        run: |
+          curl -X POST -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ secrets.PAT_TOKEN }}" \
+          https://api.github.com/repos/Nikk-123/Time/actions/workflows/auto_commit.yml/dispatches \
+          -d '{"ref":"main"}'
