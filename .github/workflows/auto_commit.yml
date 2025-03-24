@@ -1,0 +1,31 @@
+name: Auto Commit Time Log
+
+on:
+  workflow_dispatch: # Allows manual triggering
+  schedule:
+    - cron: '*/1 * * * *' # Runs every minute (GitHub Actions doesn’t support <1 min)
+
+jobs:
+  update-time-log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Git Identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update Time Log
+        run: echo "$(date)" > time_log.txt
+
+      - name: Commit and Push Changes
+        run: |
+          git add time_log.txt
+          git commit -m "Updated time log: $(date)"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
