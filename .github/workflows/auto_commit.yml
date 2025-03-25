@@ -1,0 +1,38 @@
+name: Auto Commit Time Log
+
+permissions:
+  contents: write
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' # Runs every 30 minutes (2 commits per hour)
+  workflow_dispatch: # Allows manual execution
+
+jobs:
+  update-time-log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true  # Allows GitHub Actions to use the default token
+
+      - name: Set up Git Identity (Your Identity)
+        run: |
+          git config --global user.name "Nikk-123"
+          git config --global user.email "chayan.das@stu.adamasuniversity.ac.in"
+
+      - name: Update Time Log (IST Time Format)
+        run: |
+          export TZ="Asia/Kolkata"
+          echo "$(date '+%Y-%m-%d %H:%M:%S IST')" >> time_log.txt  # Appends IST time
+
+      - name: Commit and Push Changes (Only If Needed)
+        run: |
+          git add time_log.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Updated time log: $(date '+%Y-%m-%d %H:%M:%S IST')"
+            git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/Nikk-123/Time.git main
+          else
+            echo "No changes to commit"
+          fi
